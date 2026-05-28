@@ -18,12 +18,15 @@ export function useEmployees() {
   }
 
   const sortedEmployees = computed(() => {
+    const query = (search.value || "").toLowerCase()
+
     return employees.value.filter((emp) => {
       const matchesSearch =
-        !search.value ||
-        emp.fullName
-          ?.toLowerCase()
-          .includes(search.value.toLowerCase())
+        !query ||
+        emp.fullName?.toLowerCase().includes(query) ||
+        emp.code?.toLowerCase().includes(query) ||
+        emp.department?.toLowerCase().includes(query) ||
+        emp.occupation?.toLowerCase().includes(query)
 
       const matchesDepartment =
         !departmentFilter.value ||

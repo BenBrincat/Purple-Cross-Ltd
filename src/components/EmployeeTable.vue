@@ -30,10 +30,10 @@ defineEmits(["delete"])
         <td>{{ getEmploymentStatus(emp) }}</td>
         <td>{{ getTerminationStatus(emp) }}</td>
 
-        <td>
-          <button>View</button>
-          <button>Edit</button>
-          <button @click="$emit('delete', emp)">Delete</button>
+       <td>
+            <button @click="$emit('view', emp)">View</button>
+            <button @click="$emit('edit', emp)">Edit</button>
+            <button @click="$emit('delete', emp)">Delete</button>
         </td>
       </tr>
     </tbody>
