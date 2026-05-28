@@ -1,0 +1,85 @@
+import { ref, computed } from "vue"
+import employeesData from "../data/employees.json"
+
+export function useEmployees() {
+  const employees = ref(employeesData)
+
+  const search = ref("")
+  const departmentFilter = ref("")
+
+  const isFuture = (date) => {
+    if (!date) return false
+    return new Date(date) > new Date()
+  }
+
+  const isPast = (date) => {
+    if (!date) return false
+    return new Date(date) < new Date()
+  }
+
+  const sortedEmployees = computed(() => {
+    return employees.value.filter((emp) => {
+      const matchesSearch =
+        !search.value ||
+        emp.fullName
+          ?.toLowerCase()
+          .includes(search.value.toLowerCase())
+
+      const matchesDepartment =
+        !departmentFilter.value ||
+        emp.department === departmentFilter.value
+
+      return matchesSearch && matchesDepartment
+    })
+  })
+
+  const addEmployee = (employee) => {
+    employees.value.push(employee)
+  }
+
+  const deleteEmployee = (code) => {
+    employees.value = employees.value.filter(
+      (emp) => emp.code !== code
+    )
+  }
+
+
+  // Employment Date
+
+  const getEmploymentStatus = (emp) => {
+    if (!emp.dateOfEmployment) return ""
+
+    if (isFuture(emp.dateOfEmployment)) {
+      return "Employed soon"
+    }
+
+    return "Currently employed"
+  }
+
+  // Termination Date 
+
+  const getTerminationStatus = (emp) => {
+    if (!emp.terminationDate) return ""
+
+    if (isFuture(emp.terminationDate)) {
+      return "To be terminated"
+    }
+
+    if (isPast(emp.terminationDate)) {
+      return "Terminated"
+    }
+
+    return ""
+  }
+
+  return {
+    employees,
+    sortedEmployees,
+    search,
+    departmentFilter,
+    addEmployee,
+    deleteEmployee,
+    getEmploymentStatus,
+    getTerminationStatus
+  }
+}
