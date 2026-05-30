@@ -1,8 +1,104 @@
+<script setup>
+import { reactive, ref, watch } from "vue"
+
+const errors = ref({})
+
+const props = defineProps({
+  employee: Object,
+  mode: String,
+  existingCodes: {
+    type: Array,
+    default: () => []
+  }
+})
+
+const emit = defineEmits(["close", "save", "delete"])
+
+const form = reactive({
+  code: "",
+  fullName: "",
+  occupation: "",
+  department: "",
+  dateOfEmployment: "",
+  terminationDate: ""
+})
+
+watch(
+  () => props.employee,
+  (emp) => {
+    if (!emp) return
+
+    form.code = emp.code
+    form.fullName = emp.fullName
+    form.occupation = emp.occupation
+    form.department = emp.department
+
+    form.dateOfEmployment = emp.dateOfEmployment || ""
+    form.terminationDate = emp.terminationDate || ""
+  },
+  { immediate: true }
+)
+
+const save = () => {
+  if (!validate()) return
+
+  emit("save", {
+    ...props.employee,
+    ...form
+  })
+
+  emit("close")
+}
+
+const validate = () => {
+  const newErrors = {}
+
+  // Code validation
+  if (!form.code?.trim()) {
+    newErrors.code = "Employee Code is required"
+  } else {
+    const duplicateCode = props.existingCodes.some(
+      code =>
+        code.toLowerCase() === form.code.trim().toLowerCase() &&
+        code.toLowerCase() !== props.employee.code.toLowerCase()
+    )
+
+    if (duplicateCode) {
+      newErrors.code = "Employee Code must be unique"
+    }
+  }
+
+  // Full Name
+  if (!form.fullName?.trim()) {
+    newErrors.fullName = "Full Name is required"
+  }
+
+  // Occupation
+  if (!form.occupation?.trim()) {
+    newErrors.occupation = "Occupation is required"
+  }
+
+  // Department
+  if (!form.department?.trim()) {
+    newErrors.department = "Department is required"
+  }
+
+  errors.value = newErrors
+
+  return Object.keys(newErrors).length === 0
+}
+
+const remove = () => {
+  emit("delete", props.employee.code)
+  emit("close")
+}
+</script>
+
 <template>
   <div class="overlay">
     <div class="modal">
 
-      <h2 style="border-bottom: 1px solid lightgray; margin-bottom: 7px;">
+      <h2 class="ModalName">
         {{ mode === "view" ? "View Employee" :
            mode === "edit" ? "Edit Employee" :
            "Delete Employee" }}
@@ -10,16 +106,49 @@
 
       <!-- VIEW -->
       <div v-if="mode === 'view'">
+        <p><b>Code:</b> {{ employee.code }}</p>
         <p><b>Name:</b> {{ employee.fullName }}</p>
         <p><b>Occupation:</b> {{ employee.occupation }}</p>
         <p><b>Department:</b> {{ employee.department }}</p>
+        <p><b>Date of Employment:</b> {{ employee.dateOfEmployment }}</p>
+        <p><b>Date of Termination:</b> {{ employee.terminationDate }}</p>
+
       </div>
 
       <!-- EDIT -->
       <div v-if="mode === 'edit'">
+        <label>Employee Code</label>
+        <input v-model="form.code" />
+        <span v-if="errors.code" class="error">
+        {{ errors.code }}
+        </span>
+
+        <label>Full Name</label>
         <input v-model="form.fullName" />
+        <span v-if="errors.fullName" class="error">
+        {{ errors.fullName }}
+        </span>
+
+        <label>Occupation</label>
         <input v-model="form.occupation" />
+        <span v-if="errors.occupation" class="error">
+        {{ errors.occupation }}
+        </span>
+
+        <label>Department</label>
         <input v-model="form.department" />
+        <span v-if="errors.department" class="error">
+            {{ errors.department }}
+        </span>
+
+        <label class="inputLabel">Date of Employment</label>
+        <input v-model="form.dateOfEmployment" type="date"/>
+
+    <label class="inputLabel">Termination Date</label>
+    <input
+      v-model="form.terminationDate"
+      type="date"
+    />
       </div>
 
       <!-- DELETE -->
@@ -28,7 +157,7 @@
       </div>
 
         <!-- Normal Actions -->
-      <div class="actions">
+      <div class="modal-footer">
         <button class="btn-cancel" @click="$emit('close')">Cancel</button>
 
         <button class="btn-save" v-if="mode === 'edit'" @click="save">
@@ -43,45 +172,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { reactive, watch } from "vue"
-
-const props = defineProps({
-  employee: Object,
-  mode: String
-})
-
-const emit = defineEmits(["close", "save", "delete"])
-
-const form = reactive({
-  fullName: "",
-  occupation: "",
-  department: ""
-})
-
-watch(
-  () => props.employee,
-  (emp) => {
-    if (emp) {
-      form.fullName = emp.fullName
-      form.occupation = emp.occupation
-      form.department = emp.department
-    }
-  },
-  { immediate: true }
-)
-
-const save = () => {
-  emit("save", { ...props.employee, ...form })
-  emit("close")
-}
-
-const remove = () => {
-  emit("delete", props.employee.code)
-  emit("close")
-}
-</script>
 
 <style scoped>
 .overlay {
@@ -99,52 +189,6 @@ const remove = () => {
   border-radius: 12px;
   width: 300px;
   color: gray;
-}
-
-.actions {
-  margin-top: 15px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.btn-save {
-  background: linear-gradient(135deg, #4ade80, #22c55e);
-  color: white;
-  border: none;
-      padding: 5px;
-    border-radius: 5px;
-}
-
-.btn-save:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(34, 197, 94, 0.25);
-}
-
-.btn-cancel {
-    background: #f3f4f6;
-  color: #374151;
-  border: none;
-      padding: 5px;
-    border-radius: 5px;
-}
-
-.btn-cancel:hover {
-  background: #e5e7eb;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
-}
-
-.btn-delete {
-  background: #ef4444;
-  color: white;
-  border: none;
-    padding: 5px;
-    border-radius: 5px;
-}
-
-.btn-delete:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(220, 38, 38, 0.25);
 }
 
 b {

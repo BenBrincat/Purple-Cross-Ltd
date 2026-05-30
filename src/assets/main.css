@@ -1,11 +1,80 @@
 @import './base.css';
 
 #app {
-  max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   font-weight: normal;    
   background-color: whitesmoke;
+}
+
+.ModalName{
+  border-bottom: 1px solid lightgray;
+    margin-bottom: 7px;
+    font-weight: 600;
+    color: gray;
+}
+
+.btn-save {
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  color: white;
+  border: none;
+      padding: 5px;
+    border-radius: 5px;
+}
+
+.btn-save:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(34, 197, 94, 0.25);
+}
+
+.btn-cancel {
+    background: #f3f4f6;
+  color: #374151;
+  border: none;
+      padding: 5px;
+    border-radius: 5px;
+}
+
+.btn-cancel:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+}
+
+.btn-delete {
+  background: #ef4444;
+  color: white;
+  border: none;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.btn-delete:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(220, 38, 38, 0.25);
+}
+
+input {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid lightgray;
+  gap: 10px;
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.error {
+  display: block;
+  color: red;
+  font-size: 10px;
+  margin-bottom: 5px;
 }
 
 a,

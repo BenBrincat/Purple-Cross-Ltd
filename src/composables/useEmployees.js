@@ -1,5 +1,5 @@
 import { ref, computed } from "vue"
-import employeesData from "../data/employees.json"
+import employeesData from "../data/purple_cross_employees.json"
 
 export function useEmployees() {
   const employees = ref(employeesData)
@@ -46,6 +46,15 @@ export function useEmployees() {
     )
   }
 
+  const updateEmployee = (updatedEmployee) => {
+  const index = employees.value.findIndex(
+    emp => emp.code === updatedEmployee.code
+  )
+
+  if (index !== -1) {
+    employees.value[index] = updatedEmployee
+  }
+}
 
   // Employment Date
 
@@ -82,6 +91,7 @@ export function useEmployees() {
     departmentFilter,
     addEmployee,
     deleteEmployee,
+    updateEmployee,
     getEmploymentStatus,
     getTerminationStatus
   }

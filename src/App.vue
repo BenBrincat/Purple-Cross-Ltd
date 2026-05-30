@@ -3,19 +3,20 @@ import { ref } from "vue"
 import { useEmployees } from "./composables/useEmployees"
 
 import EmployeeTable from "./components/EmployeeTable.vue"
-import EmployeeForm from "./components/EmployeeForm.vue"
 import EmployeeFilters from "./components/EmployeeFilters.vue"
-import ConfirmDialog from "./components/ConfirmDialog.vue"
 import EmployeeModal from "./components/EmployeeModal.vue"
+import CreateEmployeeModal from "./components/CreateEmployeeModal.vue"
 
 const {
   sortedEmployees,
   search,
+  employees,
   departmentFilter,
   getEmploymentStatus,
   getTerminationStatus,
-  addEmployee,
-  deleteEmployee
+  updateEmployee,
+  deleteEmployee,
+  addEmployee
 } = useEmployees()
 
 const showForm = ref(false)
@@ -23,6 +24,7 @@ const employeeToDelete = ref(null)
 const isSidebarOpen = ref(false);
 const selectedEmployee = ref(null)
 const modalMode = ref("") // "view" | "edit" | "delete"
+const showCreateModal = ref(false)
 
 const openModal = (mode, employee) => {
   selectedEmployee.value = employee
@@ -82,18 +84,28 @@ function closeSidebar() {
     @delete="openModal('delete', $event)"
   />
 
-    <button class="fab" @click="showForm = true">
-      + Create Employee
-    </button>
-
   <EmployeeModal
     v-if="selectedEmployee"
     :employee="selectedEmployee"
     :mode="modalMode"
+    :existing-codes="employees.map(emp => emp.code)"
     @close="closeModal"
-    @save="addEmployee"
+    @save="updateEmployee"
     @delete="deleteEmployee"
   />
+
+    <button class="fab" @click="showCreateModal = true">
+      + Create Employee
+    </button>
+
+    <CreateEmployeeModal
+  v-if="showCreateModal"
+  :existing-codes="employees.map(emp => emp.code)"
+  @close="showCreateModal = false"
+  @save="addEmployee"
+/>
+
+  
   </div>
 </template>
 
@@ -127,7 +139,7 @@ function closeSidebar() {
   padding-top: 60px;
 }
 
-/* Burger */
+/* Burger Icon*/
 .burger {
   font-size: 26px;
   background: none;
