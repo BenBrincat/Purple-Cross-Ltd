@@ -8,7 +8,12 @@ import EmployeeModal from "./components/EmployeeModal.vue"
 import CreateEmployeeModal from "./components/CreateEmployeeModal.vue"
 
 const {
-  sortedEmployees,
+   paginatedEmployees,
+  currentPage,
+  itemsPerPage,
+  totalPages,
+  nextPage,
+  previousPage,
   search,
   employees,
   departmentFilter,
@@ -16,7 +21,10 @@ const {
   getTerminationStatus,
   updateEmployee,
   deleteEmployee,
-  addEmployee
+  addEmployee,
+  sortField,
+  sortDirection,
+  sortBy
 } = useEmployees()
 
 const showForm = ref(false)
@@ -44,6 +52,58 @@ function closeSidebar() {
   isSidebarOpen.value = false;
 }
 
+const loading = ref(false)
+
+const changePage = (callback) => {
+  loading.value = true
+
+  setTimeout(() => {
+    callback()
+    loading.value = false
+  }, 200)
+}
+
+//Export & Import
+const exportJSON = () => {
+  const data = JSON.stringify(employees.value, null, 2)
+
+  const blob = new Blob([data], { type: "application/json" })
+  const url = URL.createObjectURL(blob)
+
+  const a = document.createElement("a")
+  a.href = url
+  a.download = "employees.json"
+  a.click()
+
+  URL.revokeObjectURL(url)
+}
+
+const fileInput = ref(null)
+
+const triggerImport = () => {
+  fileInput.value.click()
+}
+
+const handleImport = (event) => {
+  const file = event.target.files[0]
+  if (!file) return
+
+  const reader = new FileReader()
+
+  reader.onload = (e) => {
+    try {
+      const parsed = JSON.parse(e.target.result)
+
+      if (Array.isArray(parsed)) {
+        employees.value = parsed
+      }
+    } catch (err) {
+      alert("Invalid file format")
+    }
+  }
+
+  reader.readAsText(file)
+}
 
 </script>
 
@@ -52,7 +112,7 @@ function closeSidebar() {
 
     <nav class="navbar">
       <div class="nav-left">
-        <h2>Purple Cross Ltd</h2>
+        <h2 class="navTitle">Purple Cross Ltd</h2>
       </div>
 
       <div class="nav-right">
@@ -60,29 +120,62 @@ function closeSidebar() {
       </div>
     </nav>
 
+    <input ref="fileInput" type="file" accept=".json" @change="handleImport" style="display: none"/>
+
     <div v-if="isSidebarOpen" class="overlay" @click="closeSidebar"></div>
 
     <aside class="sidebar" :class="{ open: isSidebarOpen }">
       <button class="close-btn" @click="closeSidebar">✕</button>
 
       <ul>
-        <li>Employee Report</li>
+        <li>
+          <button class="sidebar-btn" @click="exportJSON">
+            Export Employee Table
+          </button>
+        </li>
+
+        <li>
+          <button class="sidebar-btn" @click="triggerImport">
+            Import Employee Information
+          </button>
+        </li>
       </ul>
     </aside>
 
+<div class="page-container">
+  <div class="table-wrapper">
 
-    <EmployeeFilters
+  <EmployeeFilters
       v-model:search="search"
     />
 
     <EmployeeTable
-    :employees="sortedEmployees"
-    :getEmploymentStatus="getEmploymentStatus"
-    :getTerminationStatus="getTerminationStatus"
-    @view="openModal('view', $event)"
-    @edit="openModal('edit', $event)"
-    @delete="openModal('delete', $event)"
-  />
+      :employees="paginatedEmployees"
+      :sortField="sortField"
+      :sortDirection="sortDirection"
+      :getEmploymentStatus="getEmploymentStatus"
+      :getTerminationStatus="getTerminationStatus"
+      @sort="sortBy"
+      @view="openModal('view', $event)"
+      @edit="openModal('edit', $event)"
+      @delete="openModal('delete', $event)"
+    />
+  </div>
+
+  <div class="pagination">
+    <button @click="previousPage" :disabled="currentPage === 1">
+      ← Previous
+    </button>
+
+    <span class="paginationTitle">
+      Page {{ currentPage }} of {{ totalPages }}
+    </span>
+
+    <button @click="nextPage" :disabled="currentPage === totalPages">
+      Next →
+    </button>
+  </div>
+</div>
 
   <EmployeeModal
     v-if="selectedEmployee"
@@ -123,13 +216,12 @@ function closeSidebar() {
   left: 0;
   width: 100%;
   height: 60px;
-
+  background: #42b883;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 25px;
   padding: 0 20px;
-  background: #111;
   color: white;
   z-index: 1000;
 }
@@ -168,7 +260,7 @@ function closeSidebar() {
   width: 260px;
   height: 100%;
 
-  background: #1c1c1c;
+  background: #42b883;
   color: white;
   padding: 20px;
 
@@ -178,6 +270,22 @@ function closeSidebar() {
 
 .sidebar.open {
   right: 0;
+}
+
+.sidebar-btn {
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  color: white;
+}
+
+.sidebar-btn:hover {
+  background: rgba(0,0,0,0.05);
+  border-radius: 6px;
 }
 
 /* Close button */

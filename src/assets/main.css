@@ -7,9 +7,18 @@
   background-color: whitesmoke;
 }
 
-.ModalName{
+.navTitle {
+  font-weight: 600;
+}
+
+.modalName{
   border-bottom: 1px solid lightgray;
     margin-bottom: 7px;
+    font-weight: 600;
+    color: gray;
+}
+
+.paginationTitle{
     font-weight: 600;
     color: gray;
 }
@@ -77,6 +86,50 @@ input {
   margin-bottom: 5px;
 }
 
+.page-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; 
+}
+
+.table-wrapper {
+  overflow: auto;
+  min-height: 0; 
+}
+
+.pagination {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+  padding: 12px;
+}
+
+.pagination button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #42b883;
+  color: white;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.pagination button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.pagination button:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-weight: 600;
+}
+
 a,
 .green {
   text-decoration: none;
@@ -85,15 +138,12 @@ a,
   padding: 3px;
 }
 
+body {
+    background-color: whitesmoke;
+  }
+
 @media (hover: hover) {
   a:hover {
     background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
   }
 }

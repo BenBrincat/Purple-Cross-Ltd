@@ -65,7 +65,7 @@ const saveEmployee = () => {
 <template>
   <div class="overlay">
     <div class="modal">
-      <h2 class="ModalName">Create Employee</h2>
+      <h2 class="modalName">Create Employee</h2>
 
      <label class="inputLabel">Employee Code *</label>
     <input v-model="employee.code" />

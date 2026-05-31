@@ -1,13 +1,3 @@
-<template>
-  <div class="filters">
-    <input
-      v-model="searchModel"
-      placeholder="Search ..."
-      class="input"
-    />
-  </div>
-</template>
-
 <script setup>
 import { computed } from "vue"
 
@@ -22,6 +12,18 @@ const searchModel = computed({
   set: (val) => emit("update:search", val)
 })
 </script>
+
+<template>
+  <div class="filters">
+    <input
+      v-model="searchModel"
+      placeholder="Search ..."
+      class="input"
+    />
+  </div>
+</template>
+
+
 
 <style scoped>
 .filters {

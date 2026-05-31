@@ -98,7 +98,7 @@ const remove = () => {
   <div class="overlay">
     <div class="modal">
 
-      <h2 class="ModalName">
+      <h2 class="modalName">
         {{ mode === "view" ? "View Employee" :
            mode === "edit" ? "Edit Employee" :
            "Delete Employee" }}

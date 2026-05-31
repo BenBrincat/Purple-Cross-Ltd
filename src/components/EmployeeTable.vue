@@ -1,22 +1,45 @@
 <script setup>
+
 defineProps({
   employees: Array,
+  sortField: String,
+  sortDirection: String,
   getEmploymentStatus: Function,
   getTerminationStatus: Function
 })
 
-defineEmits(["delete"])
+defineEmits([
+  "view",
+  "edit",
+  "delete",
+  "sort"
+])
+
 </script>
 
 <template>
   <table>
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Occupation</th>
-        <th>Department</th>
-        <th>Employment</th>
-        <th>Termination</th>
+        <th @click="$emit('sort', 'fullName')">
+      Name {{ sortField === 'fullName' ? (sortDirection === 'asc' ? '▲' : '▼') : '' }}
+    </th>
+
+    <th @click="$emit('sort', 'occupation')">
+      Occupation {{ sortField === 'occupation' ? (sortDirection === 'asc' ? '▲' : '▼') : '' }}
+    </th>
+
+    <th @click="$emit('sort', 'department')">
+      Department {{ sortField === 'department' ? (sortDirection === 'asc' ? '▲' : '▼') : '' }}
+    </th>
+
+    <th @click="$emit('sort', 'dateOfEmployment')">
+      Employment {{ sortField === 'dateOfEmployment' ? (sortDirection === 'asc' ? '▲' : '▼') : '' }}
+    </th>
+
+    <th @click="$emit('sort', 'terminationDate')">
+      Termination {{ sortField === 'terminationDate' ? (sortDirection === 'asc' ? '▲' : '▼') : '' }}
+    </th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -62,6 +85,9 @@ th {
   padding: 14px 12px;
   font-size: 14px;
   letter-spacing: 0.5px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s;
 }
 
 td {
